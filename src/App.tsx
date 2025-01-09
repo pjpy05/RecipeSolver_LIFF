@@ -53,14 +53,27 @@ const UserComponent: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLiffReady, setIsLiffReady] = useState<boolean>(false);
 
   useEffect(() => {
+    const initializeLiff = async () => {
+      try {
+        // LIFF初期化
+        await liff.init({liffId: import.meta.env.VITE_LIFF_ID});
+
+        if (!liff.isLoggedIn()) {
+          liff.login(); // ログインが必要な場合、自動でログイン
+        }
+
+        setIsLiffReady(true);
+      } catch (err: any) {
+        setError(`LIFF initialization failed: ${err.message}`);
+      }
+    };
+
     const fetchData = async () => {
       try {
-        // Initialize LIFF
-        if (!liff.isInClient()) {
-          throw new Error("This feature is only available in the LINE app.");
-        }
+        if (!isLiffReady) return; // LIFF初期化が完了していなければ待機
 
         const context = liff.getContext();
         if (!context || !context.userId) {
@@ -69,8 +82,8 @@ const UserComponent: React.FC = () => {
 
         setUserId(context.userId);
 
-        // Fetch data from API using userId
-        const response = await fetch(`https://example.com/api/user/${context.userId}`);
+        // APIリクエスト
+        const response = await fetch(`https://test241201.onrender.com/get/${context.userId}`);
         if (!response.ok) {
           throw new Error(`Error fetching data: ${response.statusText}`);
         }
@@ -82,11 +95,15 @@ const UserComponent: React.FC = () => {
       }
     };
 
-    fetchData();
-  }, []);
+    initializeLiff().then(fetchData);
+  }, [isLiffReady]);
 
   if (error) {
     return <div>Error: {error}</div>;
+  }
+
+  if (!isLiffReady) {
+    return <div>Initializing LIFF...</div>;
   }
 
   return (
