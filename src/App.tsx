@@ -44,6 +44,7 @@
 
 import React, { useEffect, useState } from "react";
 import liff from "@line/liff";
+import "./App.css";
 
 interface UserData {
   [key: string]: any;
