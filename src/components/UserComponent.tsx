@@ -3,6 +3,7 @@ import useLiff from "../hooks/useLiff";
 import useFetchData from "../hooks/useFetchData";
 import EditableForm from "./EditableForm";
 import Loading from "./Loading";
+import liff from "@line/liff";
 
 const UserComponent: React.FC = () => {
   const { isLiffReady, error: liffError } = useLiff();

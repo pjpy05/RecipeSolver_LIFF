@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import liff from "@line/liff";
 import "./App.css";
-import EditableForm from "./EditableTextBox";
-import Loading from "./Loading";
+import EditableForm from "./components/EditableForm";
+import Loading from "./components/Loading";
 
 interface UserData {
   [key: string]: any;
