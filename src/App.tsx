@@ -65,7 +65,7 @@ const App: React.FC = () => {
     <div className="App">
       <h1>User Information</h1>
       {userData ? (
-        <EditableForm userId={userId} />
+        <EditableForm userId={userId} initialData={userData} />
       ) : (
         <Loading message="Loading User Data..." />
       )}
