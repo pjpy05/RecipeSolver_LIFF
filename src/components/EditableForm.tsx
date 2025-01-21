@@ -56,7 +56,7 @@ const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
       <form>
         {Object.keys(displayFields).map((key) => (
           <div key={key} style={{ marginBottom: "10px" }}>
-            <label>{key}:</label>
+            <label>{displayFields[key]}:</label>
             <input
               type="text"
               name={key}
