@@ -9,6 +9,20 @@ interface EditableFormProps {
 const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
   const [formData, setFormData] = useState(initialData);
 
+  // 表示する項目とラベルを定義
+  const displayFields = {
+    category:"種類",
+    manufacturer:"メーカー",
+    product_name:"商品名",
+    gram_per_unit:"〇〇g当たり",
+    measurement_unit:"g以外の単位",
+    calories:"熱量（kcal）",
+    protein:"たんぱく質（g）",
+    fat:"脂質（g）",
+    carbohydrates:"炭水化物（g）",
+    sodium:"食塩相当量（g）",
+  };
+  
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
@@ -17,7 +31,18 @@ const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
   const handleSubmit = async () => {
     try {
       if (!userId) throw new Error("User ID is missing");
-      const response = await axios.post(`https://test241201.onrender.com/post/${userId}`, formData);
+  
+      // axiosでJSON形式のデータをPOST
+      const response = await axios.post(
+        `https://test241201.onrender.com/post/${userId}`,
+        formData, // 送信データ（自動的にJSONに変換される）
+        {
+          headers: {
+            "Content-Type": "application/json", // JSON形式で送信するためのヘッダー
+          },
+        }
+      );
+  
       alert("データを送信しました: " + response.data.message);
     } catch (error: any) {
       console.error("データ送信エラー:", error);
@@ -29,7 +54,7 @@ const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
     <div style={{ padding: "20px" }}>
       <h1>データ入力フォーム</h1>
       <form>
-        {Object.keys(initialData).map((key) => (
+        {Object.keys(displayFields).map((key) => (
           <div key={key} style={{ marginBottom: "10px" }}>
             <label>{key}:</label>
             <input
