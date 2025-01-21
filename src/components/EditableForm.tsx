@@ -10,7 +10,7 @@ const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
   const [formData, setFormData] = useState(initialData);
 
   // 表示する項目とラベルを定義
-  const displayFields = {
+  const displayFields: Record<keyof typeof initialData, string> = {
     category:"種類",
     manufacturer:"メーカー",
     product_name:"商品名",
@@ -60,7 +60,7 @@ const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
             <input
               type="text"
               name={key}
-              value={formData[key] || ""}
+              value={formData[key as keyof typeof initialData] || ""}
               onChange={handleChange}
               style={{ width: "100%", padding: "8px", margin: "5px 0" }}
             />
