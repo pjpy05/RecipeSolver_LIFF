@@ -55,18 +55,22 @@ const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
       <h1>データ入力フォーム</h1>
       <form>
         {Object.keys(displayFields).map((key) => (
-          <div key={key} style={{ marginBottom: "10px" }}>
+          <div key={key} 
+            // style={{ marginBottom: "10px" }}
+            >
             <label>{displayFields[key]}:</label>
             <input
               type="text"
               name={key}
               value={formData[key as keyof typeof initialData] || ""}
               onChange={handleChange}
-              style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+              // style={{ width: "100%", padding: "8px", margin: "5px 0" }}
             />
           </div>
         ))}
-        <button type="button" onClick={handleSubmit} style={{ padding: "10px 20px" }}>
+        <button type="button" onClick={handleSubmit} 
+        // style={{ padding: "10px 20px" }}
+        >
           送信
         </button>
       </form>
