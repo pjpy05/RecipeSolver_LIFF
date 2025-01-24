@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import UserComponent from "./App";
+import App from "./App";
+import "./index.css"; // グローバルスタイルの適用
 
-const root = ReactDOM.createRoot(document.getElementById("root")!);
-root.render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <UserComponent />
+    <App />
   </React.StrictMode>
 );

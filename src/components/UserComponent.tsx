@@ -1,23 +1,34 @@
 import React from "react";
-import useLiff from "../hooks/useLiff";
-import useFetchData from "../hooks/useFetchData";
+import { useLiff } from "../hooks/useLiff";
 import EditableForm from "./EditableForm";
-import Loading from "./Loading";
-import liff from "@line/liff";
+import { fetchUserData } from "../services/api";
 
 const UserComponent: React.FC = () => {
-  const { isLiffReady, error: liffError } = useLiff();
-  const userId = liff.getContext()?.userId || null;
-  const { userData, error: dataError } = useFetchData(userId);
+  const { isReady, error, userId } = useLiff();
+  const [userData, setUserData] = React.useState<any | null>(null);
 
-  if (liffError) return <div>Error: {liffError}</div>;
-  if (!isLiffReady) return <Loading message="Initializing LIFF..." />;
-  if (dataError) return <div>Error: {dataError}</div>;
+  React.useEffect(() => {
+    if (!userId) return;
+
+    const getData = async () => {
+      try {
+        const data = await fetchUserData(userId);
+        setUserData(data);
+      } catch (err: any) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    getData();
+  }, [userId]);
+
+  if (error) return <div>Error: {error}</div>;
+  if (!isReady) return <div>Initializing LIFF...</div>;
 
   return (
     <div>
       <h1>User Information</h1>
-      {userData ? <EditableForm userId={userId} initialData={userData} /> : <Loading message="Loading User Data..." />}
+      {userData ? <EditableForm userId={userId} /> : <p>Loading User Data...</p>}
     </div>
   );
 };

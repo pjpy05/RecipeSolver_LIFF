@@ -1,52 +1,38 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { postUserData } from "../services/api";
+import InputField from "./InputField";
+import "./EditableTextBox.css";
 
-interface EditableFormProps {
-  userId: string | null;
-  initialData: Record<string, any>;
+
+interface Props {
+  userId: string;
 }
 
-const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
-  const [formData, setFormData] = useState(initialData);
+const EditableForm: React.FC<Props> = ({ userId }) => {
+  const [formData, setFormData] = useState({
+    category: "",
+    manufacturer: "",
+    product_name: "",
+    gram_per_unit: "",
+    measurement_unit: "",
+    calories: "",
+    protein: "",
+    fat: "",
+    carbohydrates: "",
+    sodium: "",
+  });
 
-  // 表示する項目とラベルを定義
-  const displayFields: Record<keyof typeof initialData, string> = {
-    category:"種類",
-    manufacturer:"メーカー",
-    product_name:"商品名",
-    gram_per_unit:"〇〇g当たり",
-    measurement_unit:"g以外の単位",
-    calories:"熱量（kcal）",
-    protein:"たんぱく質（g）",
-    fat:"脂質（g）",
-    carbohydrates:"炭水化物（g）",
-    sodium:"食塩相当量（g）",
-  };
-  
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+  const handleChange = (name: string, value: string) => {
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async () => {
     try {
-      if (!userId) throw new Error("User ID is missing");
-  
-      // axiosでJSON形式のデータをPOST
-      const response = await axios.post(
-        `https://test241201.onrender.com/post/${userId}`,
-        formData, // 送信データ（自動的にJSONに変換される）
-        {
-          headers: {
-            "Content-Type": "application/json", // JSON形式で送信するためのヘッダー
-          },
-        }
-      );
-  
-      alert("データを送信しました: " + response.data.message);
-    } catch (error: any) {
+      const response = await postUserData(userId, formData);
+      alert("データ送信成功: " + response.message);
+    } catch (error) {
       console.error("データ送信エラー:", error);
-      alert("データ送信に失敗しました");
+      alert("データ送信失敗");
     }
   };
 
@@ -54,23 +40,15 @@ const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
     <div style={{ padding: "20px" }}>
       <h1>データ入力フォーム</h1>
       <form>
-        {Object.keys(displayFields).map((key) => (
-          <div key={key} 
-            // style={{ marginBottom: "10px" }}
-            >
-            <label>{displayFields[key]}:</label>
-            <input
-              type="text"
-              name={key}
-              value={formData[key as keyof typeof initialData] || ""}
-              onChange={handleChange}
-              // style={{ width: "100%", padding: "8px", margin: "5px 0" }}
-            />
-          </div>
+        {Object.keys(formData).map((key) => (
+          <InputField
+            key={key}
+            name={key}
+            value={formData[key as keyof typeof formData]}
+            onChange={handleChange}
+          />
         ))}
-        <button type="button" onClick={handleSubmit} 
-        // style={{ padding: "10px 20px" }}
-        >
+        <button type="button" onClick={handleSubmit} style={{ padding: "10px 20px" }}>
           送信
         </button>
       </form>
