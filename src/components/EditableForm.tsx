@@ -1,24 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { postUserData } from "../services/apiService";
 import { UserData } from "../types/user";
 
 interface EditableFormProps {
   userId: string;
+  initialData: UserData;
 }
 
-const EditableForm: React.FC<EditableFormProps> = ({ userId }) => {
-  const [formData, setFormData] = useState<UserData>({
-    category: "",
-    manufacturer: "",
-    product_name: "",
-    gram_per_unit: "",
-    measurement_unit: "",
-    calories: "",
-    protein: "",
-    fat: "",
-    carbohydrates: "",
-    sodium: "",
-  });
+const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
+  // 初期値としてpropsのinitialDataを利用
+  const [formData, setFormData] = useState<UserData>(initialData);
+
+  // 初期データが更新された場合、内部stateも更新
+  useEffect(() => {
+    setFormData(initialData);
+  }, [initialData]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;

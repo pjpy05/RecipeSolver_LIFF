@@ -40,7 +40,8 @@ const UserComponent: React.FC = () => {
   return (
     <div>
       <h1>User Information</h1>
-      <EditableForm userId={userId!} />
+      {/* userDataをEditableFormに渡す */}
+      <EditableForm userId={userId!} initialData={userData} />
     </div>
   );
 };
