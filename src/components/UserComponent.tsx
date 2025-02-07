@@ -1,4 +1,3 @@
-// project/src/components/UserComponent.tsx
 import React, { useEffect, useState } from "react";
 import EditableForm from "./EditableForm";
 import { initializeLiff, getLiffContext } from "../services/liffService";
@@ -10,23 +9,6 @@ const UserComponent: React.FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLiffReady, setIsLiffReady] = useState<boolean>(false);
-
-  // ユーザーデータ再取得用の関数
-  const fetchData = async (id: string) => {
-    try {
-      const data = await fetchUserData(id);
-      setUserData(data);
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  // EditableForm から呼ばれる送信成功時のコールバック
-  const handleFormSubmitSuccess = async () => {
-    if (userId) {
-      await fetchData(userId);
-    }
-  };
 
   useEffect(() => {
     const init = async () => {
@@ -41,7 +23,8 @@ const UserComponent: React.FC = () => {
         }
         setUserId(context.userId);
 
-        await fetchData(context.userId);
+        const data = await fetchUserData(context.userId);
+        setUserData(data);
       } catch (err: any) {
         setError(err.message);
       }
@@ -57,11 +40,8 @@ const UserComponent: React.FC = () => {
   return (
     <div>
       <h1>User Information</h1>
-      <EditableForm
-        userId={userId!}
-        initialData={userData}
-        onSubmitSuccess={handleFormSubmitSuccess}
-      />
+      {/* userDataをEditableFormに渡す */}
+      <EditableForm userId={userId!} initialData={userData} />
     </div>
   );
 };
