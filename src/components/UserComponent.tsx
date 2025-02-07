@@ -1,34 +1,46 @@
-import React from "react";
-import { useLiff } from "../hooks/useLiff";
+import React, { useEffect, useState } from "react";
 import EditableForm from "./EditableForm";
-import { fetchUserData } from "../services/api";
+import { initializeLiff, getLiffContext } from "../services/liffService";
+import { fetchUserData } from "../services/apiService";
+import { UserData } from "../types/user";
 
 const UserComponent: React.FC = () => {
-  const { isReady, error, userId } = useLiff();
-  const [userData, setUserData] = React.useState<any | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLiffReady, setIsLiffReady] = useState<boolean>(false);
 
-  React.useEffect(() => {
-    if (!userId) return;
-
-    const getData = async () => {
+  useEffect(() => {
+    const init = async () => {
       try {
-        const data = await fetchUserData(userId);
+        const liffId = import.meta.env.VITE_LIFF_ID || "";
+        await initializeLiff(liffId);
+        setIsLiffReady(true);
+
+        const context = getLiffContext();
+        if (!context || !context.userId) {
+          throw new Error("User ID not found.");
+        }
+        setUserId(context.userId);
+
+        const data = await fetchUserData(context.userId);
         setUserData(data);
       } catch (err: any) {
-        console.error("Error fetching data:", err);
+        setError(err.message);
       }
     };
 
-    getData();
-  }, [userId]);
+    init();
+  }, []);
 
   if (error) return <div>Error: {error}</div>;
-  if (!isReady) return <div>Initializing LIFF...</div>;
+  if (!isLiffReady) return <div>Initializing LIFF...</div>;
+  if (!userData) return <div>Loading User Data...</div>;
 
   return (
     <div>
       <h1>User Information</h1>
-      {userData ? <EditableForm userId={userId} /> : <p>Loading User Data...</p>}
+      <EditableForm userId={userId!} />
     </div>
   );
 };

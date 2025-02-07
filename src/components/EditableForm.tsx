@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { postUserData } from "../services/api";
-import InputField from "./InputField";
-import "./EditableTextBox.css";
+import { postUserData } from "../services/apiService";
+import { UserData } from "../types/user";
 
-
-interface Props {
+interface EditableFormProps {
   userId: string;
 }
 
-const EditableForm: React.FC<Props> = ({ userId }) => {
-  const [formData, setFormData] = useState({
+const EditableForm: React.FC<EditableFormProps> = ({ userId }) => {
+  const [formData, setFormData] = useState<UserData>({
     category: "",
     manufacturer: "",
     product_name: "",
@@ -22,17 +20,18 @@ const EditableForm: React.FC<Props> = ({ userId }) => {
     sodium: "",
   });
 
-  const handleChange = (name: string, value: string) => {
-    setFormData({ ...formData, [name]: value });
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
     try {
-      const response = await postUserData(userId, formData);
-      alert("データ送信成功: " + response.message);
+      const result = await postUserData(userId, formData);
+      alert("データを送信しました: " + result.message);
     } catch (error) {
       console.error("データ送信エラー:", error);
-      alert("データ送信失敗");
+      alert("データ送信に失敗しました");
     }
   };
 
@@ -40,14 +39,106 @@ const EditableForm: React.FC<Props> = ({ userId }) => {
     <div style={{ padding: "20px" }}>
       <h1>データ入力フォーム</h1>
       <form>
-        {Object.keys(formData).map((key) => (
-          <InputField
-            key={key}
-            name={key}
-            value={formData[key as keyof typeof formData]}
+        <div style={{ marginBottom: "10px" }}>
+          <label>種類:</label>
+          <input
+            type="text"
+            name="category"
+            value={formData.category}
             onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
           />
-        ))}
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>メーカー:</label>
+          <input
+            type="text"
+            name="manufacturer"
+            value={formData.manufacturer}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>商品名:</label>
+          <input
+            type="text"
+            name="product_name"
+            value={formData.product_name}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>〇〇g当たり:</label>
+          <input
+            type="text"
+            name="gram_per_unit"
+            value={formData.gram_per_unit}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>g以外の単位:</label>
+          <input
+            type="text"
+            name="measurement_unit"
+            value={formData.measurement_unit}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>熱量（kcal）:</label>
+          <input
+            type="text"
+            name="calories"
+            value={formData.calories}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>たんぱく質（g）:</label>
+          <input
+            type="text"
+            name="protein"
+            value={formData.protein}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>脂質（g）:</label>
+          <input
+            type="text"
+            name="fat"
+            value={formData.fat}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>炭水化物（g）:</label>
+          <input
+            type="text"
+            name="carbohydrates"
+            value={formData.carbohydrates}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>食塩相当量（g）:</label>
+          <input
+            type="text"
+            name="sodium"
+            value={formData.sodium}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+          />
+        </div>
         <button type="button" onClick={handleSubmit} style={{ padding: "10px 20px" }}>
           送信
         </button>
