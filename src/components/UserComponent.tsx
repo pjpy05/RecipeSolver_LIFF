@@ -10,6 +10,16 @@ const UserComponent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLiffReady, setIsLiffReady] = useState<boolean>(false);
 
+  // ユーザーデータ再取得用の関数
+  const loadUserData = async (id: string) => {
+    try {
+      const data = await fetchUserData(id);
+      setUserData(data);
+    } catch (err: any) {
+      console.error("再取得エラー:", err);
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -23,8 +33,7 @@ const UserComponent: React.FC = () => {
         }
         setUserId(context.userId);
 
-        const data = await fetchUserData(context.userId);
-        setUserData(data);
+        await loadUserData(context.userId);
       } catch (err: any) {
         setError(err.message);
       }
@@ -35,13 +44,16 @@ const UserComponent: React.FC = () => {
 
   if (error) return <div>Error: {error}</div>;
   if (!isLiffReady) return <div>Initializing LIFF...</div>;
-  if (!userData) return <div>Loading User Data...</div>;
+  if (!userData || !userId) return <div>Loading User Data...</div>;
 
   return (
     <div>
       <h1>User Information</h1>
-      {/* userDataをEditableFormに渡す */}
-      <EditableForm userId={userId!} initialData={userData} />
+      <EditableForm
+        userId={userId}
+        initialData={userData}
+        onSubmitSuccess={() => loadUserData(userId)}
+      />
     </div>
   );
 };

@@ -5,13 +5,16 @@ import { UserData } from "../types/user";
 interface EditableFormProps {
   userId: string;
   initialData: UserData;
+  onSubmitSuccess?: () => void;
 }
 
-const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
-  // 初期値としてpropsのinitialDataを利用
+const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData, onSubmitSuccess }) => {
+  // propsの初期データを内部stateとして管理
   const [formData, setFormData] = useState<UserData>(initialData);
+  // フォームの表示状態管理
+  const [isVisible, setIsVisible] = useState(true);
 
-  // 初期データが更新された場合、内部stateも更新
+  // 初期データが更新された場合に内部stateも更新する
   useEffect(() => {
     setFormData(initialData);
   }, [initialData]);
@@ -25,11 +28,20 @@ const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
     try {
       const result = await postUserData(userId, formData);
       alert("データを送信しました: " + result.message);
+      // 送信成功時にフォームを閉じる
+      setIsVisible(false);
+      // 親コンポーネントでのデータ再取得を実施
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
+      }
     } catch (error) {
       console.error("データ送信エラー:", error);
       alert("データ送信に失敗しました");
     }
   };
+
+  // isVisibleがfalseならフォームを非表示（nullを返す）
+  if (!isVisible) return null;
 
   return (
     <div style={{ padding: "20px" }}>
@@ -135,10 +147,10 @@ const EditableForm: React.FC<EditableFormProps> = ({ userId, initialData }) => {
             style={{ width: "100%", padding: "8px", margin: "5px 0" }}
           />
         </div>
-        <button type="button" onClick={handleSubmit} style={{ padding: "10px 20px" }}>
-          送信
-        </button>
       </form>
+      <button type="button" onClick={handleSubmit} style={{ padding: "10px 20px" }}>
+        送信
+      </button>
     </div>
   );
 };
